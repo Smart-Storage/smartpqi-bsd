@@ -152,10 +152,6 @@ os_remove_device(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device)
 		}
 		xpt_async(AC_LOST_DEVICE, tmppath, NULL);
 		xpt_free_path(tmppath);
-		/* softs->device_list[device->target][device->lun] = NULL; */
-		int index = pqisrc_find_device_list_index(softs,device);
-		if (index >= 0 && index < PQI_MAX_DEVICES)
-			softs->dev_list[index] = NULL;
 		pqisrc_free_device(softs, device);
 	}
 
@@ -1240,7 +1236,7 @@ register_sim(struct pqisrc_softstate *softs, int card_index)
 {
 	int max_transactions;
 	union ccb   *ccb = NULL;
-	cam_status status = 0;
+	int error;
 	struct ccb_setasync csa;
 	struct cam_sim *sim;
 
@@ -1267,9 +1263,9 @@ register_sim(struct pqisrc_softstate *softs, int card_index)
 
 	softs->os_specific.sim = sim;
 	mtx_lock(&softs->os_specific.cam_lock);
-	status = xpt_bus_register(sim, softs->os_specific.pqi_dev, 0);
-	if (status != CAM_SUCCESS) {
-		DBG_ERR("xpt_bus_register failed status=%d\n", status);
+	error = xpt_bus_register(sim, softs->os_specific.pqi_dev, 0);
+	if (error != CAM_SUCCESS) {
+		DBG_ERR("xpt_bus_register failed errno %d\n", error);
 		cam_sim_free(softs->os_specific.sim, FALSE);
 		cam_simq_free(softs->os_specific.devq);
 		mtx_unlock(&softs->os_specific.cam_lock);

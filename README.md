@@ -1,6 +1,25 @@
 # smartpqi-bsd
 **Microchip PQI FreeBSD Driver**
 
+### Version 4450.0.1009 (August 2023)
+
+ - fix: Change alignment for dma tags
+
+    Problem: Under certain I/O conditions, a program doing large block disk reads
+    can cause a controller to crash.
+
+    Root Cause: The SCSI read request and destination address in the BDMA descriptor
+    is incorrect, causing the BDMA engine in the controller to assert.
+
+    Fix: Change the alignment for creating bus_dma_tags in the driver from
+    PAGE_SIZE (4k) to 1, which allows the controller to manage it's own address
+    range for BDMA transactions.
+
+    Risk: Medium
+
+    Exposure: Since 4034.0
+
+
 ### Version 4410.0.1005 (July 2023)
  - Added support for FreeBSD 13.2
 

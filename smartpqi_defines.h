@@ -939,7 +939,7 @@ typedef struct _driver_info
 typedef uint8_t *passthru_buf_type_t;
 
 #define PQISRC_DRIVER_MAJOR		__FreeBSD__
-#define PQISRC_DRIVER_MINOR	   4410
+#define PQISRC_DRIVER_MINOR	   4460
 #define PQISRC_DRIVER_RELEASE	   0
 #define PQISRC_DRIVER_REVISION   50000
 

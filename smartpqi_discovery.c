@@ -1636,7 +1636,7 @@ pqisrc_free_device(pqisrc_softstate_t * softs, pqi_scsi_dev_t *device)
 	/* Find the entry in device list for the freed device softs->dev_list[i]&
 	 *make it NULL before freeing the device memory
 	 */
-	index = pqisrc_find_device_list_index(softs, device);
+	index = pqisrc_find_btl_list_index(softs, device->bus, device->target, device->lun);
 
 	OS_ACQUIRE_SPINLOCK(&softs->devlist_lock);
 	scsi3addr = device->scsi3addr;
