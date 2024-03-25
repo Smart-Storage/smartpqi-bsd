@@ -1,5 +1,5 @@
 /*-
- * Copyright 2016-2022 Microchip Technology, Inc. and/or its subsidiaries.
+ * Copyright 2016-2024 Microchip Technology, Inc. and/or its subsidiaries.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -515,11 +515,7 @@ pqisrc_destroy_event_queue(pqisrc_softstate_t *softs)
 	DBG_FUNC("IN\n");
 
 	if (softs->event_q.created == true) {
-		int ret = PQI_STATUS_SUCCESS;
-		ret = pqisrc_delete_op_queue(softs, softs->event_q.q_id, false);
-		if (ret) {
-			DBG_ERR("Failed to Delete Event Q %u\n", softs->event_q.q_id);
-		}
+      pqisrc_delete_op_queue(softs, softs->event_q.q_id, false);
 		softs->event_q.created = false;
 	}
 
@@ -536,7 +532,8 @@ pqisrc_destroy_event_queue(pqisrc_softstate_t *softs)
 void
 pqisrc_destroy_op_ib_queues(pqisrc_softstate_t *softs)
 {
-	int ret = PQI_STATUS_SUCCESS;
+
+/*	int ret = PQI_STATUS_SUCCESS; */
 	ib_queue_t *op_ib_q = NULL;
 	uint32_t total_op_ibq = softs->num_op_raid_ibq;
 	int i;
@@ -549,12 +546,7 @@ pqisrc_destroy_op_ib_queues(pqisrc_softstate_t *softs)
 		op_ib_q = &softs->op_raid_ib_q[i];
 release_queue:
 		if (op_ib_q->created == true) {
-			ret = pqisrc_delete_op_queue(softs, op_ib_q->q_id,
-							true);
-			if (ret) {
-				DBG_ERR("Failed to Delete IB Q %u\n",
-					op_ib_q->q_id);
-			}
+         pqisrc_delete_op_queue(softs, op_ib_q->q_id,	true);
 			op_ib_q->created = false;
 		}
 
@@ -583,7 +575,6 @@ release_queue:
 void
 pqisrc_destroy_op_ob_queues(pqisrc_softstate_t *softs)
 {
-	int ret = PQI_STATUS_SUCCESS;
 	int i;
 	ob_queue_t *op_ob_q = NULL;
 
@@ -593,10 +584,7 @@ pqisrc_destroy_op_ob_queues(pqisrc_softstate_t *softs)
 		op_ob_q = &softs->op_ob_q[i];
 
 		if (op_ob_q->created == true) {
-			ret = pqisrc_delete_op_queue(softs, op_ob_q->q_id, false);
-			if (ret) {
-				DBG_ERR("Failed to Delete OB Q %u\n",op_ob_q->q_id);
-			}
+         pqisrc_delete_op_queue(softs, op_ob_q->q_id, false);
 			op_ob_q->created = false;
 		}
 
@@ -644,7 +632,7 @@ pqisrc_destroy_admin_queue(pqisrc_softstate_t *softs)
  */
 int
 pqisrc_change_op_ibq_queue_prop(pqisrc_softstate_t *softs,
-			ib_queue_t *op_ib_q, uint32_t prop)
+			ib_queue_t const *op_ib_q, uint32_t prop)
 {
 	int ret = PQI_STATUS_SUCCESS;;
 	gen_adm_req_iu_t admin_req;
@@ -702,7 +690,7 @@ pqisrc_create_op_obq(pqisrc_softstate_t *softs,
 		int i = 0;
 		DBG_WARN("Error Status Descriptors\n");
 		for(i = 0; i < 4;i++)
-			DBG_WARN(" %x ",admin_resp.resp_type.create_op_oq.status_desc[i]);
+			DBG_WARN(" %x\n",admin_resp.resp_type.create_op_oq.status_desc[i]);
 	}
 
 	DBG_FUNC("OUT ret : %d\n", ret);
@@ -745,7 +733,7 @@ pqisrc_create_op_ibq(pqisrc_softstate_t *softs,
 		int i = 0;
 		DBG_WARN("Error Status Decsriptors\n");
 		for(i = 0; i < 4;i++)
-			DBG_WARN(" %x ",admin_resp.resp_type.create_op_iq.status_desc[i]);
+			DBG_WARN(" %x\n",admin_resp.resp_type.create_op_iq.status_desc[i]);
 	}
 
 	DBG_FUNC("OUT ret : %d\n", ret);

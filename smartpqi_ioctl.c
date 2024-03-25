@@ -1,5 +1,5 @@
 /*-
- * Copyright 2016-2023 Microchip Technology, Inc. and/or its subsidiaries.
+ * Copyright 2016-2024 Microchip Technology, Inc. and/or its subsidiaries.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -75,7 +75,7 @@ smartpqi_close(struct cdev *cdev, int flags, int devtype,
  * ioctl for getting driver info
  */
 static void
-smartpqi_get_driver_info_ioctl(caddr_t udata, struct cdev *cdev)
+smartpqi_get_driver_info_ioctl(caddr_t udata, struct cdev const *cdev)
 {
 	struct pqisrc_softstate *softs = cdev->si_drv1;
 	pdriver_info driver_info = (pdriver_info)udata;
@@ -97,7 +97,7 @@ smartpqi_get_driver_info_ioctl(caddr_t udata, struct cdev *cdev)
  * ioctl for getting controller info
  */
 static void
-smartpqi_get_pci_info_ioctl(caddr_t udata, struct cdev *cdev)
+smartpqi_get_pci_info_ioctl(caddr_t udata, struct cdev const *cdev)
 {
 	struct pqisrc_softstate *softs = cdev->si_drv1;
 	device_t dev = softs->os_specific.pqi_dev;
@@ -243,7 +243,7 @@ pqisrc_passthru_ioctl(struct pqisrc_softstate *softs, void *arg, int mode)
 	pqisrc_raid_req_t request;
 	raid_path_error_info_elem_t error_info;
 	ib_queue_t *ib_q = &softs->op_raid_ib_q[PQI_DEFAULT_IB_QUEUE];
-	ob_queue_t *ob_q = &softs->op_ob_q[PQI_DEFAULT_IB_QUEUE];
+	ob_queue_t const *ob_q = &softs->op_ob_q[PQI_DEFAULT_IB_QUEUE];
 	rcb_t *rcb = NULL;
 
 	memset(&request, 0, sizeof(request));

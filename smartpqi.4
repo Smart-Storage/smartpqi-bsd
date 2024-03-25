@@ -1,4 +1,4 @@
-.\" Copyright (C) 2019-2023, Microchip Technology Inc. and its subsidiaries
+.\" Copyright (C) 2019-2024, Microchip Technology Inc. and its subsidiaries
 .\" Copyright (C) 2016-2018, Microsemi Corporation
 .\" Copyright (C) 2016, PMC-Sierra, Inc.
 .\" Written by John Hall <john.hall@microchip.com>
@@ -62,6 +62,30 @@ Adaptec SmartRaid and SmartHBA Controllers
 .It
 OEM Controllers based on the Microchip Technology Inc. SmartROC
 and SmartIOC Chipsets
+.El
+.Sh DEBUGGING
+Driver diagnostic printing is controlled in
+.Xr loader.conf 5
+by using the global
+.Va hw.smartpqi.debug_level
+tunable.
+.Pp
+The
+.Va debug_level
+variable is set with an integer value.
+The default value is 0x0060 (warn && error).
+.Pp
+The following levels are available:
+.Bl -column "FlagXX" "NameXXXX" "Description" -offset indent
+.It Em Flag Ta Em Name Ta Em Description
+.It 0x0001 Ta init Ta System initialization operations
+.It 0x0002 Ta info Ta Basic information
+.It 0x0004 Ta function Ta Used to show function entry and exit
+.It 0x0008 Ta io Ta Logging data from controller
+.It 0x0010 Ta discovery Ta Device discovery
+.It 0x0020 Ta warning Ta Operational warnings
+.It 0x0040 Ta error Ta Parameter errors and programming bugs
+.It 0x0080 Ta note Ta More detailed information
 .El
 .Sh FILES
 .Bl -tag -width /boot/kernel/smartpqi.ko -compact

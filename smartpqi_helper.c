@@ -1,5 +1,5 @@
 /*-
- * Copyright 2016-2022 Microchip Technology, Inc. and/or its subsidiaries.
+ * Copyright 2016-2024 Microchip Technology, Inc. and/or its subsidiaries.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,7 +31,7 @@
  * Function used to validate the adapter health.
  */
 boolean_t
-pqisrc_ctrl_offline(pqisrc_softstate_t *softs)
+pqisrc_ctrl_offline(pqisrc_softstate_t const *softs)
 {
 	DBG_FUNC("IN\n");
 
@@ -84,12 +84,10 @@ pqisrc_take_ctrl_offline(pqisrc_softstate_t *softs)
 {
 	DBG_FUNC("IN\n");
 
-	int lockupcode = 0;
-
 	softs->ctrl_online = false;
 
 	if (SIS_IS_KERNEL_PANIC(softs)) {
-		lockupcode = PCI_MEM_GET32(softs, &softs->ioa_reg->mb[7], LEGACY_SIS_SRCV_OFFSET_MAILBOX_7);
+		int lockupcode = PCI_MEM_GET32(softs, &softs->ioa_reg->mb[7], LEGACY_SIS_SRCV_OFFSET_MAILBOX_7);
         DBG_ERR("Controller FW is not running, Lockup code = %x\n", lockupcode);
 	}
 	else {
@@ -173,7 +171,7 @@ pqisrc_wait_on_condition(pqisrc_softstate_t *softs, rcb_t *rcb,
 		}
 
 		if (pqisrc_ctrl_offline(softs)) {
-			DBG_ERR("Controller is Offline");
+			DBG_ERR("Controller is Offline\n");
 			ret = PQI_STATUS_FAILURE;
 			break;
 		}
@@ -188,29 +186,29 @@ pqisrc_wait_on_condition(pqisrc_softstate_t *softs, rcb_t *rcb,
 
 /* Function used to validate the device wwid. */
 boolean_t
-pqisrc_device_equal(pqi_scsi_dev_t *dev1,
-	pqi_scsi_dev_t *dev2)
+pqisrc_device_equal(pqi_scsi_dev_t const *dev1,
+	pqi_scsi_dev_t const *dev2)
 {
 	return dev1->wwid == dev2->wwid;
 }
 
 /* Function used to validate the device scsi3addr. */
 boolean_t
-pqisrc_scsi3addr_equal(uint8_t *scsi3addr1, uint8_t *scsi3addr2)
+pqisrc_scsi3addr_equal(uint8_t const *scsi3addr1, uint8_t const *scsi3addr2)
 {
 	return memcmp(scsi3addr1, scsi3addr2, 8) == 0;
 }
 
 /* Function used to validate hba_lunid */
 boolean_t
-pqisrc_is_hba_lunid(uint8_t *scsi3addr)
+pqisrc_is_hba_lunid(uint8_t const *scsi3addr)
 {
 	return pqisrc_scsi3addr_equal(scsi3addr, RAID_CTLR_LUNID);
 }
 
 /* Function used to validate type of device */
 boolean_t
-pqisrc_is_logical_device(pqi_scsi_dev_t *device)
+pqisrc_is_logical_device(pqi_scsi_dev_t const *device)
 {
 	return !device->is_physical_device;
 }
@@ -257,10 +255,10 @@ pqisrc_raidlevel_to_string(uint8_t raid_level)
 
 /* Debug routine for displaying device info */
 void pqisrc_display_device_info(pqisrc_softstate_t *softs,
-	char *action, pqi_scsi_dev_t *device)
+	char const *action, pqi_scsi_dev_t *device)
 {
 	if (device->is_physical_device) {
-		DBG_NOTE("%s scsi BTL %d:%d:%d:  %.8s %.16s %-12s "
+		DBG_NOTE("%s scsi B%d:T%d:L%d  %.8s %.16s %-12s "
 		"SSDSmartPathCap%c En%c Exp%c qd=%d\n",
 		action,
 		device->bus,
@@ -274,7 +272,7 @@ void pqisrc_display_device_info(pqisrc_softstate_t *softs,
 		device->expose_device ? '+' : '-',
 		device->queue_depth);
 	} else if (device->devtype == RAID_DEVICE) {
-		DBG_NOTE("%s scsi BTL %d:%d:%d:  %.8s %.16s %-12s "
+		DBG_NOTE("%s scsi B%d:T%d:L%d  %.8s %.16s %-12s "
 		"SSDSmartPathCap%c En%c Exp%c qd=%d\n",
 		action,
 		device->bus,
@@ -288,7 +286,7 @@ void pqisrc_display_device_info(pqisrc_softstate_t *softs,
 		device->expose_device ? '+' : '-',
 		device->queue_depth);
 	} else if (device->devtype == CONTROLLER_DEVICE) {
-		DBG_NOTE("%s scsi BTL %d:%d:%d:  %.8s %.16s %-12s "
+		DBG_NOTE("%s scsi B%d:T%d:L%d  %.8s %.16s %-12s "
 		"SSDSmartPathCap%c En%c Exp%c qd=%d\n",
 		action,
 		device->bus,
@@ -302,7 +300,7 @@ void pqisrc_display_device_info(pqisrc_softstate_t *softs,
 		device->expose_device ? '+' : '-',
 		device->queue_depth);
 	} else {
-		DBG_NOTE("%s scsi BTL %d:%d:%d:  %.8s %.16s %-12s "
+		DBG_NOTE("%s scsi B%d:T%d:L%d  %.8s %.16s %-12s "
 		"SSDSmartPathCap%c En%c Exp%c qd=%d devtype=%d\n",
 		action,
 		device->bus,
@@ -322,7 +320,7 @@ void pqisrc_display_device_info(pqisrc_softstate_t *softs,
 
 /* validate the structure sizes */
 void
-check_struct_sizes()
+check_struct_sizes(void)
 {
 
     ASSERT(sizeof(SCSI3Addr_struct)== 2);
@@ -416,18 +414,6 @@ check_device_pending_commands_to_complete(pqisrc_softstate_t *softs, pqi_scsi_de
 	} while(tag);
 }
 #endif
-
-extern inline uint64_t
-pqisrc_increment_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device);
-
-extern inline uint64_t
-pqisrc_decrement_device_active_io(pqisrc_softstate_t *softs,  pqi_scsi_dev_t *device);
-
-extern inline void
-pqisrc_init_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device);
-
-extern inline uint64_t
-pqisrc_read_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device);
 
 void
 pqisrc_wait_for_device_commands_to_complete(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device)

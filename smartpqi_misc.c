@@ -1,5 +1,5 @@
 /*-
- * Copyright 2016-2022 Microchip Technology, Inc. and/or its subsidiaries.
+ * Copyright 2016-2024 Microchip Technology, Inc. and/or its subsidiaries.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -59,7 +59,7 @@ void
 os_wellness_periodic(void *data)
 {
 	struct pqisrc_softstate *softs = (struct pqisrc_softstate *)data;
-	int ret = 0;
+	int ret;
 
 	/* update time to FW */
 	if (!pqisrc_ctrl_offline(softs)){

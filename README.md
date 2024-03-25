@@ -1,6 +1,49 @@
 # smartpqi-bsd
 **Microchip PQI FreeBSD Driver**
 
+### Version 4500.0.1024 (December 2023)
+
+ - feat: Adjust CAM_BUSY
+
+    During a device reset, only set the CAM_BUSY status flag.
+    (Suggested by upstream maintainer during code review.)
+
+
+### Version 4490.0.1013 (December 2023)
+
+ - fix: With INVARIANTS enabled kernel, panic observed while creating & deleting array.
+
+    Root cause: While creating & deleting memory was freeing
+    inside the spinlock.
+
+    Fix: Move the memory freeing outside the spinlock
+
+    Risk: Low
+
+
+ - fix: Panic observed when removing drive with INVARIANTS enabled
+
+    Problem: With INVARIANTS enabled in the kernel , panic observed
+    while hot-removing a drive
+
+    Root cause: pqisrc_free_device function frees device memory
+    inside the spinlock.
+
+    Fix: Move the memory freeing outside the spinlock.
+
+    Risk: Low
+
+ - feat:  Add support for FreeBSD 14.0
+
+### Version 4480.0.1021 (November 2023)
+
+### Version 4470.0.1012 (November 2023)
+
+ - feat:  Add logging levels as a tunable value
+
+    Adds the ability to set the driver debugging
+    levels in the loader.conf file.
+
 ### Version 4450.0.1009 (August 2023)
 
  - fix: Change alignment for dma tags
@@ -19,10 +62,8 @@
 
     Exposure: Since 4034.0
 
-
 ### Version 4410.0.1005 (July 2023)
  - Added support for FreeBSD 13.2
-
 
 ### Version 4390.0.1010 (March 2023)
  - fix: Wrong LUN is getting reset when LUN RESET TMF issued

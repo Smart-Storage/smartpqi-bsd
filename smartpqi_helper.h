@@ -1,5 +1,5 @@
 /*-
- * Copyright 2016-2023 Microchip Technology, Inc. and/or its subsidiaries.
+ * Copyright 2016-2024 Microchip Technology, Inc. and/or its subsidiaries.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,7 +29,7 @@
 #define _PQI_HELPER_H
 
 
-inline uint64_t
+static inline uint64_t
 pqisrc_increment_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device)
 {
 #if PQISRC_DEVICE_IO_COUNTER
@@ -38,7 +38,7 @@ pqisrc_increment_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *dev
 #endif
 }
 
-inline uint64_t
+static inline uint64_t
 pqisrc_decrement_device_active_io(pqisrc_softstate_t *softs,  pqi_scsi_dev_t *device)
 {
 #if PQISRC_DEVICE_IO_COUNTER
@@ -47,7 +47,7 @@ pqisrc_decrement_device_active_io(pqisrc_softstate_t *softs,  pqi_scsi_dev_t *de
 #endif
 }
 
-inline void
+static inline void
 pqisrc_init_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device)
 {
 #if PQISRC_DEVICE_IO_COUNTER
@@ -56,7 +56,7 @@ pqisrc_init_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device)
 #endif
 }
 
-inline uint64_t
+static inline uint64_t
 pqisrc_read_device_active_io(pqisrc_softstate_t *softs, pqi_scsi_dev_t *device)
 {
 #if PQISRC_DEVICE_IO_COUNTER

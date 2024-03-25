@@ -1,5 +1,5 @@
 /*-
- * Copyright 2016-2022 Microchip Technology, Inc. and/or its subsidiaries.
+ * Copyright 2016-2024 Microchip Technology, Inc. and/or its subsidiaries.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +32,11 @@
 #include "smartpqi_includes.h"
 
 CTASSERT(BSD_SUCCESS == PQI_STATUS_SUCCESS);
+
+/*
+ * Logging levels global
+*/
+unsigned long logging_level  = PQISRC_LOG_LEVEL;
 
 /*
  * Supported devices
@@ -84,13 +89,17 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x193d, 0xf461, PQI_HWIF_SRCV, "UN RAID P460-B4"},
 	{0x9005, 0x028f, 0x1bd4, 0x004b, PQI_HWIF_SRCV, "PM8204-2GB"},
 	{0x9005, 0x028f, 0x1bd4, 0x004c, PQI_HWIF_SRCV, "PM8204-4GB"},
+	{0x9005, 0x028f, 0x1ff9, 0x004b, PQI_HWIF_SRCV, "RAID PM8204-2GB"},
+	{0x9005, 0x028f, 0x1ff9, 0x004c, PQI_HWIF_SRCV, "RAID PM8204-4GB"},
 	{0x9005, 0x028f, 0x193d, 0x1105, PQI_HWIF_SRCV, "UN RAID P4408-Mf-8i-2GB"},
 	{0x9005, 0x028f, 0x193d, 0x1107, PQI_HWIF_SRCV, "UN RAID P4408-Mf-8i-4GB"},
+	{0x9005, 0x028f, 0x193d, 0x1110, PQI_HWIF_SRCV, "UN RAID P4408-Mr-2"},
 	{0x9005, 0x028f, 0x1d8d, 0x800,	PQI_HWIF_SRCV, "Fiberhome SmartRAID AIS-8204-8i"},
 	{0x9005, 0x028f, 0x9005, 0x0808, PQI_HWIF_SRCV,	"SmartRAID 3101E-4i"},
 	{0x9005, 0x028f, 0x9005, 0x0809, PQI_HWIF_SRCV, "SmartRAID 3102E-8i"},
 	{0x9005, 0x028f, 0x9005, 0x080a, PQI_HWIF_SRCV, "SmartRAID 3152-8i/N"},
 	{0x9005, 0x028f, 0x1cc4, 0x0101, PQI_HWIF_SRCV, "Ramaxel FBGF-RAD PM8204"},
+	{0x9005, 0x028f, 0x1f3a, 0x0104, PQI_HWIF_SRCV, "PL SmartROC PM8204"},
 	{0x9005, 0x028f, 0x1f51, 0x1043, PQI_HWIF_SRCV, "SmartRAID P7502-8i"},
 	{0x9005, 0x028f, 0x1f51, 0x1045, PQI_HWIF_SRCV, "SmartRAID P7504-8i"},
 	{0x9005, 0x028f, 0x1f51, 0x1011, PQI_HWIF_SRCV, "SmartRAID P7504N-8i"},
@@ -111,11 +120,15 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x193d, 0xc460, PQI_HWIF_SRCV, "UN RAID P460-M2"},
 	{0x9005, 0x028f, 0x193d, 0xc461, PQI_HWIF_SRCV, "UN RAID P460-B2"},
 	{0x9005, 0x028f, 0x1bd4, 0x004a, PQI_HWIF_SRCV, "PM8222-SHBA"},
+	{0x9005, 0x028f, 0x1ff9, 0x004a, PQI_HWIF_SRCV, "PM8222-SHBA"},
 	{0x9005, 0x028f, 0x13fe, 0x8312, PQI_HWIF_SRCV, "MIC-8312BridgeB"},
 	{0x9005, 0x028f, 0x1bd4, 0x004f, PQI_HWIF_SRCV, "PM8222-HBA"},
+	{0x9005, 0x028f, 0x1ff9, 0x004f, PQI_HWIF_SRCV, "PM8222-HBA"},
 	{0x9005, 0x028f, 0x1d8d, 0x908,	PQI_HWIF_SRCV, "Fiberhome SmartHBA AIS-8222-8i"},
 	{0x9005, 0x028f, 0x1bd4, 0x006C, PQI_HWIF_SRCV, "RS0800M5E8i"},
 	{0x9005, 0x028f, 0x1bd4, 0x006D, PQI_HWIF_SRCV, "RS0800M5H8i"},
+	{0x9005, 0x028f, 0x1ff9, 0x006C, PQI_HWIF_SRCV, "RS0800M5E8i"},
+	{0x9005, 0x028f, 0x1ff9, 0x006D, PQI_HWIF_SRCV, "RS0800M5H8i"},
 	{0x9005, 0x028f, 0x1cc4, 0x0201, PQI_HWIF_SRCV, "Ramaxel FBGF-RAD PM8222"},
 	{0x9005, 0x028f, 0x1f51, 0x1044, PQI_HWIF_SRCV, "SmartHBA P6500-8i"},
 
@@ -132,13 +145,17 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x9005, 0x1303, PQI_HWIF_SRCV, "SmartHBA 2100-24i"},
 	{0x9005, 0x028f, 0x105b, 0x1321, PQI_HWIF_SRCV, "8242-24i"},
 	{0x9005, 0x028f, 0x1bd4, 0x0045, PQI_HWIF_SRCV, "SMART-HBA 8242-24i"},
+	{0x9005, 0x028f, 0x1ff9, 0x0045, PQI_HWIF_SRCV, "SMART-HBA 8242-24i"},
 	{0x9005, 0x028f, 0x1bd4, 0x006B, PQI_HWIF_SRCV, "RS0800M5H24i"},
 	{0x9005, 0x028f, 0x1bd4, 0x0070, PQI_HWIF_SRCV, "RS0800M5E24i"},
+	{0x9005, 0x028f, 0x1ff9, 0x006B, PQI_HWIF_SRCV, "RS0800M5H24i"},
+	{0x9005, 0x028f, 0x1ff9, 0x0070, PQI_HWIF_SRCV, "RS0800M5E24i"},
 
 	/* (MSCC PM8236 16x12G based) */
 	{0x9005, 0x028f, 0x152d, 0x8a24, PQI_HWIF_SRCV, "QS-8236-16i"},
 	{0x9005, 0x028f, 0x9005, 0x1380, PQI_HWIF_SRCV, "SmartRAID 3154-16i"},
 	{0x9005, 0x028f, 0x1bd4, 0x0046, PQI_HWIF_SRCV, "RAID 8236-16i"},
+	{0x9005, 0x028f, 0x1ff9, 0x0046, PQI_HWIF_SRCV, "RAID 8236-16i"},
 	{0x9005, 0x028f, 0x1d8d, 0x806,  PQI_HWIF_SRCV, "Fiberhome SmartRAID AIS-8236-16i"},
 	{0x9005, 0x028f, 0x1cf2, 0x0B27, PQI_HWIF_SRCV, "ZTE SmartROC3100 SDPSA/B-18i 4G"},
 	{0x9005, 0x028f, 0x1cf2, 0x0B45, PQI_HWIF_SRCV, "ZTE SmartROC3100 SDPSA/B_L-18i 2G"},
@@ -149,6 +166,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1cf2, 0x544D, PQI_HWIF_SRCV, "ZTE SmartROC3100 RM241B-18i 2G"},
 	{0x9005, 0x028f, 0x1cf2, 0x544E, PQI_HWIF_SRCV, "ZTE SmartROC3100 RM242B-18i 4G"},
 	{0x9005, 0x028f, 0x1bd4, 0x006F, PQI_HWIF_SRCV, "RS0804M5R16i"},
+	{0x9005, 0x028f, 0x1ff9, 0x006F, PQI_HWIF_SRCV, "RS0804M5R16i"},
 	{0x9005, 0x028f, 0x1f51, 0x1010, PQI_HWIF_SRCV, "SmartRAID P7504N-16i"},
 
 
@@ -163,6 +181,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x9005, 0x1281, PQI_HWIF_SRCV, "HBA 1100-16e"},
 	{0x9005, 0x028f, 0x105b, 0x1211, PQI_HWIF_SRCV, "8238-16i"},
 	{0x9005, 0x028f, 0x1bd4, 0x0048, PQI_HWIF_SRCV, "SMART-HBA 8238-16i"},
+	{0x9005, 0x028f, 0x1ff9, 0x0048, PQI_HWIF_SRCV, "SMART-HBA 8238-16i"},
 	{0x9005, 0x028f, 0x9005, 0x1282, PQI_HWIF_SRCV, "SmartHBA 2100-16i"},
 	{0x9005, 0x028f, 0x1d8d, 0x916,  PQI_HWIF_SRCV, "Fiberhome SmartHBA AIS-8238-16i"},
 	{0x9005, 0x028f, 0x1458, 0x1000, PQI_HWIF_SRCV, "GIGABYTE SmartHBA CLN1832"},
@@ -172,6 +191,8 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1cf2, 0x544F, PQI_HWIF_SRCV, "ZTE SmartIOC2100 RM243B-18i"},
 	{0x9005, 0x028f, 0x1bd4, 0x0071, PQI_HWIF_SRCV, "RS0800M5H16i"},
 	{0x9005, 0x028f, 0x1bd4, 0x0072, PQI_HWIF_SRCV, "RS0800M5E16i"},
+	{0x9005, 0x028f, 0x1ff9, 0x0071, PQI_HWIF_SRCV, "RS0800M5H16i"},
+	{0x9005, 0x028f, 0x1ff9, 0x0072, PQI_HWIF_SRCV, "RS0800M5E16i"},
 
 	/* (MSCC PM8240 24x12G based) */
 	{0x9005, 0x028f, 0x152d, 0x8a36, PQI_HWIF_SRCV, "QS-8240-24i"},
@@ -179,6 +200,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x9005, 0x1201, PQI_HWIF_SRCV, "SmartRAID 3154-8i16e"},
 	{0x9005, 0x028f, 0x9005, 0x1202, PQI_HWIF_SRCV, "SmartRAID 3154-8i8e"},
 	{0x9005, 0x028f, 0x1bd4, 0x0047, PQI_HWIF_SRCV, "RAID 8240-24i"},
+	{0x9005, 0x028f, 0x1ff9, 0x0047, PQI_HWIF_SRCV, "RAID 8240-24i"},
 	{0x9005, 0x028f, 0x1dfc, 0x3161, PQI_HWIF_SRCV, "NTCOM SAS3 RAID-24i"},
 	{0x9005, 0x028f, 0x1F0C, 0x3161, PQI_HWIF_SRCV, "NT RAID 3100-24i"},
 
@@ -196,6 +218,10 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1bd4, 0x0054, PQI_HWIF_SRCV, "MT0800M6H"},
 	{0x9005, 0x028f, 0x1bd4, 0x0086, PQI_HWIF_SRCV, "RT0800M7E"},
 	{0x9005, 0x028f, 0x1bd4, 0x0087, PQI_HWIF_SRCV, "RT0800M7H"},
+	{0x9005, 0x028f, 0x1ff9, 0x0052, PQI_HWIF_SRCV, "MT0801M6E"},
+	{0x9005, 0x028f, 0x1ff9, 0x0054, PQI_HWIF_SRCV, "MT0800M6H"},
+	{0x9005, 0x028f, 0x1ff9, 0x0086, PQI_HWIF_SRCV, "RT0800M7E"},
+	{0x9005, 0x028f, 0x1ff9, 0x0087, PQI_HWIF_SRCV, "RT0800M7H"},
 	{0x9005, 0x028f, 0x1f51, 0x1001, PQI_HWIF_SRCV, "SmartHBA P6600-8i"},
 	{0x9005, 0x028f, 0x1f51, 0x1003, PQI_HWIF_SRCV, "SmartHBA P6600-8e"},
 	{0x9005, 0x028f, 0x9005, 0x1460, PQI_HWIF_SRCV, "HBA 1200"},
@@ -207,6 +233,10 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1bd4, 0x0053, PQI_HWIF_SRCV, "MT0808M6R"},
 	{0x9005, 0x028f, 0x1bd4, 0x0088, PQI_HWIF_SRCV, "RT0804M7R"},
 	{0x9005, 0x028f, 0x1bd4, 0x0089, PQI_HWIF_SRCV, "RT0808M7R"},
+	{0x9005, 0x028f, 0x1ff9, 0x0051, PQI_HWIF_SRCV, "MT0804M6R"},
+	{0x9005, 0x028f, 0x1ff9, 0x0053, PQI_HWIF_SRCV, "MT0808M6R"},
+	{0x9005, 0x028f, 0x1ff9, 0x0088, PQI_HWIF_SRCV, "RT0804M7R"},
+	{0x9005, 0x028f, 0x1ff9, 0x0089, PQI_HWIF_SRCV, "RT0808M7R"},
 	{0x9005, 0x028f, 0x1f51, 0x1002, PQI_HWIF_SRCV, "SmartRAID P7604-8i"},
 	{0x9005, 0x028f, 0x1f51, 0x1004, PQI_HWIF_SRCV, "SmartRAID P7604-8e"},
 	{0x9005, 0x028f, 0x1f51, 0x100f, PQI_HWIF_SRCV, "SmartRAID P7604N-8i"},
@@ -261,6 +291,7 @@ struct pqi_ident
 
 	/* (MSCC PM8269 16x12G based) */
 	{0x9005, 0x028f, 0x9005, 0x1400, PQI_HWIF_SRCV, "SmartRAID Ultra 3258P-16i /e"},
+	{0x9005, 0x028f, 0x1ff9, 0x00a1, PQI_HWIF_SRCV, "RT1608M6R16i"},
 
 	/* (MSCC PM8270 16x12G based) */
 	{0x9005, 0x028f, 0x9005, 0x1410, PQI_HWIF_SRCV, "HBA Ultra 1200P-16e"},
@@ -502,6 +533,20 @@ static void smartpqi_read_all_device_hint_file_entries(struct pqisrc_softstate *
 	DBG_FUNC("IN\n");
 }
 
+/* Get the driver parameter tunables. */
+static void
+smartpqi_get_tunables(void)
+{
+   /*
+    * Temp variable used to get the value from loader.conf.
+    * Initializing it with the current logging level value.
+    */
+	unsigned long logging_level_temp = PQISRC_LOG_LEVEL;
+
+	TUNABLE_ULONG_FETCH("hw.smartpqi.debug_level", &logging_level_temp);
+
+   DBG_SET_LOGGING_LEVEL(logging_level_temp);
+}
 
 /*
  * Allocate resources for our device, set up the bus interface.
@@ -519,7 +564,7 @@ smartpqi_attach(device_t dev)
 	rcb_t *rcbp = NULL;
 
 	/*
-	 * Initialise softc.
+	 * Initialize softc.
 	 */
 	softs = device_get_softc(dev);
 
@@ -530,6 +575,8 @@ smartpqi_attach(device_t dev)
 	}
 	memset(softs, 0, sizeof(*softs));
 	softs->os_specific.pqi_dev = dev;
+
+   smartpqi_get_tunables();
 
 	DBG_FUNC("IN\n");
 
@@ -835,16 +882,6 @@ static device_method_t pqi_methods[] = {
 	DEVMETHOD(device_shutdown,	smartpqi_shutdown),
 	{ 0, 0 }
 };
-
-/*
- *   Do not merge into FreeBSD repo
- *   This will need to be removed once we are on a version
- *   of FreeBSD that supports this change
- */
-static devclass_t	pqi_devclass;
-/*
- * End of change
- */
 
 static driver_t smartpqi_pci_driver = {
 	"smartpqi",
