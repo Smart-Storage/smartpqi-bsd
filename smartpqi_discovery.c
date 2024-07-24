@@ -1943,6 +1943,8 @@ pqisrc_write_driver_version_to_host_wellness(pqisrc_softstate_t *softs)
 
     }
 	host_wellness_driver_ver->driver_version[sizeof(host_wellness_driver_ver->driver_version) - 1] = '\0';
+	host_wellness_driver_ver->dont_write_tag[0] = 'D';
+	host_wellness_driver_ver->dont_write_tag[1] = 'W';
 	host_wellness_driver_ver->end_tag[0] = 'Z';
 	host_wellness_driver_ver->end_tag[1] = 'Z';
 
@@ -1989,8 +1991,8 @@ pqisrc_write_current_time_to_host_wellness(pqisrc_softstate_t *softs)
 	host_wellness_time->start_tag[3] = '>';
 	host_wellness_time->time_tag[0] = 'T';
 	host_wellness_time->time_tag[1] = 'D';
-	host_wellness_time->time_length = LE_16(offsetof(struct bmic_host_wellness_time, time_length) -
-											offsetof(struct bmic_host_wellness_time, century));
+	host_wellness_time->time_length = LE_16(offsetof(struct bmic_host_wellness_time, dont_write_tag) -
+											offsetof(struct bmic_host_wellness_time, hour));
 
 	os_get_time(host_wellness_time);
 

@@ -334,7 +334,7 @@ check_struct_sizes(void)
        64 bit and 32 bit system*/
     ASSERT(sizeof(IOCTL_Command_struct)== 86 ||
            sizeof(IOCTL_Command_struct)== 82);
-    ASSERT(sizeof(struct bmic_host_wellness_driver_version)== 42);
+    ASSERT(sizeof(struct bmic_host_wellness_driver_version)== 44);
     ASSERT(sizeof(struct bmic_host_wellness_time)== 20);
     ASSERT(sizeof(struct pqi_dev_adminq_cap)== 8);
     ASSERT(sizeof(struct admin_q_param)== 4);

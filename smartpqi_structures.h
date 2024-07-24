@@ -36,6 +36,7 @@ struct bmic_host_wellness_driver_version {
 	uint8_t		driver_version_tag[2];
 	uint16_t	driver_version_length;
 	char		driver_version[32];
+	uint8_t		dont_write_tag[2];
 	uint8_t		end_tag[2];
 
 }OS_ATTRIBUTE_PACKED;

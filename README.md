@@ -1,6 +1,15 @@
 # smartpqi-bsd
 **Microchip PQI FreeBSD Driver**
 
+### Version 4540.0.1005 (May 2024)
+
+### Version 4530.0.1010 (April 2024)
+
+### Version 4520.0.1015 (March 2024)
+
+### Version 4510.0.1018 (February 2024)
+
+
 ### Version 4500.0.1024 (December 2023)
 
  - feat: Adjust CAM_BUSY

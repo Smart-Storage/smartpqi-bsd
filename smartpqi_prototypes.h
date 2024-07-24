@@ -113,7 +113,7 @@ int pqisrc_prepare_send_raid(pqisrc_softstate_t *, pqisrc_raid_req_t *,
 
 
 /* smartpqi_helper.c */
-boolean_t pqisrc_ctrl_offline(pqisrc_softstate_t *);
+boolean_t pqisrc_ctrl_offline(pqisrc_softstate_t const *);
 void pqisrc_heartbeat_timer_handler(pqisrc_softstate_t *);
 int pqisrc_wait_on_condition(pqisrc_softstate_t *softs, rcb_t *rcb,
 	uint32_t timeout);

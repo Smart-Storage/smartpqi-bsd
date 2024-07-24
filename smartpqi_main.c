@@ -91,6 +91,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1bd4, 0x004c, PQI_HWIF_SRCV, "PM8204-4GB"},
 	{0x9005, 0x028f, 0x1ff9, 0x004b, PQI_HWIF_SRCV, "RAID PM8204-2GB"},
 	{0x9005, 0x028f, 0x1ff9, 0x004c, PQI_HWIF_SRCV, "RAID PM8204-4GB"},
+	{0x9005, 0x028f, 0x193d, 0x0462, PQI_HWIF_SRCV, "UN RAID P460-Mr1-8i-4GB"},
 	{0x9005, 0x028f, 0x193d, 0x1105, PQI_HWIF_SRCV, "UN RAID P4408-Mf-8i-2GB"},
 	{0x9005, 0x028f, 0x193d, 0x1107, PQI_HWIF_SRCV, "UN RAID P4408-Mf-8i-4GB"},
 	{0x9005, 0x028f, 0x193d, 0x1110, PQI_HWIF_SRCV, "UN RAID P4408-Mr-2"},
@@ -117,6 +118,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x9005, 0x90a,  PQI_HWIF_SRCV, "SmartHBA 2100A-8i"},
 	{0x9005, 0x028f, 0x193d, 0x8460, PQI_HWIF_SRCV, "UN HBA H460-M1"},
 	{0x9005, 0x028f, 0x193d, 0x8461, PQI_HWIF_SRCV, "UN HBA H460-B1"},
+	{0x9005, 0x028f, 0x193d, 0x8462, PQI_HWIF_SRCV, "UN HBA H460-Mr1-8i"},
 	{0x9005, 0x028f, 0x193d, 0xc460, PQI_HWIF_SRCV, "UN RAID P460-M2"},
 	{0x9005, 0x028f, 0x193d, 0xc461, PQI_HWIF_SRCV, "UN RAID P460-B2"},
 	{0x9005, 0x028f, 0x1bd4, 0x004a, PQI_HWIF_SRCV, "PM8222-SHBA"},
@@ -220,6 +222,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1bd4, 0x0087, PQI_HWIF_SRCV, "RT0800M7H"},
 	{0x9005, 0x028f, 0x1ff9, 0x0052, PQI_HWIF_SRCV, "MT0801M6E"},
 	{0x9005, 0x028f, 0x1ff9, 0x0054, PQI_HWIF_SRCV, "MT0800M6H"},
+	{0x9005, 0x028f, 0x1ff9, 0x00a3, PQI_HWIF_SRCV, "RT0800M6E2i"},
 	{0x9005, 0x028f, 0x1ff9, 0x0086, PQI_HWIF_SRCV, "RT0800M7E"},
 	{0x9005, 0x028f, 0x1ff9, 0x0087, PQI_HWIF_SRCV, "RT0800M7H"},
 	{0x9005, 0x028f, 0x1f51, 0x1001, PQI_HWIF_SRCV, "SmartHBA P6600-8i"},
@@ -285,6 +288,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x9005, 0x1491, PQI_HWIF_SRCV, "SmartHBA 2200p Ultra"},
 	{0x9005, 0x028f, 0x9005, 0x1402, PQI_HWIF_SRCV, "HBA Ultra 1200P-16i"},
 	{0x9005, 0x028f, 0x9005, 0x1441, PQI_HWIF_SRCV, "HBA Ultra 1200P-32i"},
+	{0x9005, 0x028f, 0x1137, 0x0300, PQI_HWIF_SRCV, "Cisco 24G TriMode M1 HBA LFF 32D UCSC-HBAMP1LL32"},
 
 	/* (MSCC PM8268 16x12G based) */
 	{0x9005, 0x028f, 0x9005, 0x14d0, PQI_HWIF_SRCV, "SmartRAID Ultra 3258P-16i"},
@@ -309,7 +313,8 @@ struct pqi_ident
 
 	/* (MSCC PM8273 16x12G based) */
 	{0x9005, 0x028f, 0x9005, 0x1430, PQI_HWIF_SRCV, "SmartRAID Ultra 3254-16e /e"},
-	{0x9005, 0x028f, 0x1337, 0x02f9, PQI_HWIF_SRCV, "Cisco 24G TriMode M1 RAID 4GB FBWC 16D UCSC-RAID-M1L16"},
+	{0x9005, 0x028f, 0x1137, 0x02f9, PQI_HWIF_SRCV, "Cisco 24G TriMode M1 RAID 4GB FBWC 16D UCSC-RAID-M1L16"},
+	{0x9005, 0x028f, 0x1137, 0x02ff, PQI_HWIF_SRCV, "Cisco 24G TriMode M1 RAID 4GB FBWC 6D UCSX-RAID-M1L6"},
 
 	/* (MSCC PM8274 16x12G based) */
 	{0x9005, 0x028f, 0x1e93, 0x1000, PQI_HWIF_SRCV, "ByteHBA JGH43024-8"},
@@ -324,7 +329,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1e93, 0x1002, PQI_HWIF_SRCV, "ByteHBA JGH44014-8"},
 
 	/* (MSCC PM8277 16x12G based) */
-	{0x9005, 0x028f, 0x1377, 0x02f8, PQI_HWIF_SRCV, "Cisco 24G TriMode M1 RAID 4GB FBWC 32D UCSC-RAID-MP1L32"},
+	{0x9005, 0x028f, 0x1137, 0x02f8, PQI_HWIF_SRCV, "Cisco 24G TriMode M1 RAID 4GB FBWC 32D UCSC-RAID-MP1L32"},
 
 	/* (MSCC PM8278 16x12G based) */
 	{0x9005, 0x028f, 0x9005, 0x1440, PQI_HWIF_SRCV, "SmartRAID Ultra 3258P-32i"},
@@ -338,6 +343,7 @@ struct pqi_ident
 	{0x9005, 0x028f, 0x1590, 0x02db, PQI_HWIF_SRCV, "SR416ie-m Gen11"},
 	{0x9005, 0x028f, 0x1590, 0x032e, PQI_HWIF_SRCV, "SR416i-o Gen11"},
 	{0x9005, 0x028f, 0x9005, 0x1452, PQI_HWIF_SRCV, "SmartRAID 3200p Ultra"},
+	{0x9005, 0x028f, 0x1137, 0x02fe, PQI_HWIF_SRCV, "Cisco 24G TriMode M1 RAID LFF 32D UCSC-RAIDMP1LL32"},
 
 	/* (MSCC HBA/SMARTHBA/CFF SmartRAID - Lenovo 8X12G 16X12G based)  */
 	{0x9005, 0x028f, 0x1d49, 0x0220, PQI_HWIF_SRCV, "4350-8i SAS/SATA HBA"},
@@ -889,17 +895,6 @@ static driver_t smartpqi_pci_driver = {
 	sizeof(struct pqisrc_softstate)
 };
 
-/*
- *   Do not merge into FreeBSD repo
- *   This will need to be replaced with the commented out version
-  *  once we are on a version of FreeBSD that supports this change
- */
-DRIVER_MODULE(smartpqi, pci, smartpqi_pci_driver, pqi_devclass, 0, 0);
-/*
 DRIVER_MODULE(smartpqi, pci, smartpqi_pci_driver, 0, 0);
-*/
-/*
- * End of change
- */
 
 MODULE_DEPEND(smartpqi, pci, 1, 1, 1);
